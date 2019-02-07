@@ -1,0 +1,55 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "actionGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique name (within the Resource Group) for the Action group."
+      }
+    },
+    "actionGroupShortName": {
+      "type": "string",
+      "metadata": {
+        "description": "Short name (maximum 12 characters) for the Action group."
+      }
+    },
+    "armRoleReceiverName": {
+        "type": "string",
+        "metadata": {
+          "description": "Name for an action"
+        }
+      },    
+      "armRoleReceiverRoleId": {
+        "type": "string",
+        "defaultValue": "Owner",
+        "metadata": {
+          "description": "IAM Role (Owner, Contributor or Reader"
+        }
+      }    
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Insights/actionGroups",
+      "apiVersion": "2018-09-01",
+      "name": "[parameters('actionGroupName')]",
+      "location": "Global",
+      "properties": {
+        "groupShortName": "[parameters('actionGroupShortName')]",
+        "enabled": true,
+        "smsReceivers": [
+        ],
+        "emailReceivers": [
+        ],
+        "webhookReceivers": [
+         ],
+         "armRoleReceivers": [
+            {
+              "name": "[parameters('armRoleReceiverName')]",
+              "roleId": "[parameters('armRoleReceiverRoleId')]"
+            }
+        ]
+      }
+    }
+  ]
+}

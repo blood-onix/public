@@ -1,0 +1,23 @@
+$rg = resource group name
+$vmname = VM name
+
+$VM = Get-AzVM $rg -Name $vmname
+
+New-AzResourceGroupDeployment -Name New_ActionGroup_Depl_1 -ResourceGroupName $rg -TemplateFile .\newactiongroup.json -TemplateParameterFile .\newactiongroup.parameters.json
+
+$ag_name = Get-AzActionGroup -ResourceGroupName $rg
+
+New-AzResourceGroupDeployment -Name New_MonitorRule_Depl_1 -ResourceGroupName $rg -TemplateFile .\newalert.json -TemplateParameterFile .\newalert.parameters.json -resourceId $VM.Id -actionGroupId $ag_name.Id
+
+P.S.
+Basically we can use nested templates and add output in AG deployements, something like
+
+ "outputs":{
+      "actionGroupResourceId":{
+          "type":"string",
+          "value":"[resourceId('Microsoft.Insights/actionGroups',parameters('actionGroupName'))]"
+      }
+  }
+
+However I thought that you would need to create multiple rules for a single action group, in case of multiple AG groups in RG need to modify $ag_name and perfom sorting
+Same thing regarding parameters -resourceId and -actionGroupId, basically you can pass them to param file, however I think that in real life in case of deploying for a multiple Azure resources - PS objects are more suitable, at least VM id...
